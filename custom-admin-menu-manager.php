@@ -65,6 +65,7 @@ class CAMM_Admin_Menu_Manager {
         if ( $hook !== 'toplevel_page_' . self::SLUG ) {
             return;
         }
+        wp_enqueue_media();
         wp_enqueue_script( 'jquery-ui-sortable' );
         wp_enqueue_script( 'camm-admin-js', plugin_dir_url( __FILE__ ) . 'js/camm-admin.js', [ 'jquery', 'jquery-ui-sortable' ], '1.0.1', true );
         wp_enqueue_style( 'camm-admin-css', plugin_dir_url( __FILE__ ) . 'css/camm-admin.css', [], '1.0.1' );
@@ -168,6 +169,16 @@ class CAMM_Admin_Menu_Manager {
         $roles = $wp_roles->roles;
         $selected_role = isset( $_GET['camm_role'] ) ? sanitize_key( $_GET['camm_role'] ) : 'administrator';
         $option_name = $this->get_option_name_for_role( $selected_role );
+        $reset_feedback = '';
+        // Reset-Handling
+        if ( isset($_POST['camm_reset']) && check_admin_referer('camm_reset_' . $selected_role) ) {
+            delete_option($option_name);
+            $reset_feedback = '<div class="notice notice-success is-dismissible"><p>' . esc_html__('Menü-Einstellungen für diese Rolle wurden zurückgesetzt.', self::TEXTDOMAIN) . '</p></div>';
+            // Nach dem Reset die Seite neu laden, um Standardwerte zu zeigen
+            echo $reset_feedback;
+            echo '<script>setTimeout(function(){ window.location = "' . esc_url_raw( add_query_arg(['page'=>self::SLUG, 'camm_role'=>$selected_role], admin_url('admin.php')) ) . '"; }, 1200);</script>';
+            return;
+        }
         $settings = get_option( $option_name, [] );
         $allowed = isset( $settings['allowed'] ) ? $settings['allowed'] : [];
         $renames = isset( $settings['renames'] ) ? $settings['renames'] : [];
@@ -192,6 +203,7 @@ class CAMM_Admin_Menu_Manager {
                     </select>
                 </form>
             </div>
+            <?php if ( $reset_feedback ) echo $reset_feedback; ?>
             <form method="post" action="options.php">
                 <?php settings_fields( 'camm_settings_group' ); ?>
                 <input type="hidden" name="action" value="update">
@@ -206,32 +218,55 @@ class CAMM_Admin_Menu_Manager {
                     $icon_url = '';
                     global $submenu;
                     $has_submenu = isset($submenu[$slug]) && is_array($submenu[$slug]) && count($submenu[$slug]) > 0;
+                    $is_divider = strpos($slug, 'divider') !== false;
                     echo '<li data-order-name="' . esc_attr( $option_name ) . '[order]" >';
+                    echo '<div class="camm-row">';
                     echo '<span class="camm-handle dashicons dashicons-menu" title="Drag & Drop"></span>';
-                    echo '<span class="camm-settings dashicons dashicons-admin-generic" title="Optionen"></span>';
                     echo '<span class="camm-icon-wrap">';
                     if ( $icon_url ) {
-                        echo '<img class="camm-icon" src="' . esc_url( $icon_url ) . '" alt="Icon">';
+                        echo '<img class="camm-icon camm-icon-preview" src="' . esc_url( $icon_url ) . '" alt="Icon">';
                     }
-                    echo '<button class="camm-icon-upload dashicons dashicons-upload" title="Icon wählen"></button>';
+                    echo '<button class="camm-icon-upload dashicons dashicons-upload" title="Icon wählen" type="button"></button>';
+                    echo '<input type="hidden" class="camm-icon-url" name="' . esc_attr( $option_name ) . '[icons][' . esc_attr( $slug ) . ']" value="' . esc_attr( $icon_url ) . '">';
+                    echo '<input type="hidden" class="camm-icon-color" name="camm_svg_color" value="">';
+                    echo '<div class="camm-icon-colorpicker-wrap" style="display:none; margin-top:6px;">';
+                    echo '<label style="font-size:13px; color:#666;">SVG-Farbe: <input type="color" class="camm-icon-colorpicker" value="#000000"></label>';
+                    echo '</div>';
                     echo '</span>';
+                    echo '<label class="camm-switch"><input type="checkbox" name="' . esc_attr( $option_name ) . '[allowed][]" value="' . esc_attr( $slug ) . '" ' . $checked . '><span class="camm-slider"></span></label>';
+                    if($is_divider) {
+                        echo '<span class="camm-label">Divider</span>';
+                    } else {
+                        echo '<span class="camm-label">' . $label . '</span>';
+                    }
+                    if(!$is_divider) {
+                        echo '<input type="text" name="' . esc_attr( $option_name ) . '[renames][' . esc_attr( $slug ) . ']" value="' . $rename . '" placeholder="' . esc_attr__( 'Umbenennen', self::TEXTDOMAIN ) . '">';
+                    }
                     if($has_submenu) {
                         echo '<button type="button" class="camm-submenu-toggle" aria-expanded="false" title="Untermenü anzeigen"><span class="dashicons dashicons-arrow-down"></span></button>';
                     }
-                    echo '<label class="camm-switch"><input type="checkbox" name="' . esc_attr( $option_name ) . '[allowed][]" value="' . esc_attr( $slug ) . '" ' . $checked . '><span class="camm-slider"></span></label>';
-                    echo '<span class="camm-label">' . $label . '</span>';
-                    echo '<input type="text" name="' . esc_attr( $option_name ) . '[renames][' . esc_attr( $slug ) . ']" value="' . $rename . '" placeholder="' . esc_attr__( 'Umbenennen', self::TEXTDOMAIN ) . '">';
-                    echo '<button type="button" class="camm-dropdown" title="Mehr"> </button>';
                     echo '<input type="hidden" class="camm-order" name="' . esc_attr( $option_name ) . '[order][]" value="' . esc_attr( $slug ) . '">';
+                    echo '</div>';
                     // Untermenüs ausgeben
                     if($has_submenu) {
                         echo '<ul class="camm-submenu-list" style="display:none;">';
                         foreach($submenu[$slug] as $subitem) {
                             $sublabel = esc_html( strip_tags( $subitem[0] ) );
                             $subslug = $subitem[2];
-                            echo '<li class="camm-submenu-item">';
-                            echo '<span class="camm-label">' . $sublabel . '</span>';
-                            // Hier können weitere Felder wie Switch, Rename etc. ergänzt werden
+                            $is_subdivider = strpos($subslug, 'divider') !== false;
+                            echo '<li class="camm-submenu-item" data-order-name="' . esc_attr( $option_name ) . '[suborder][' . esc_attr( $slug ) . ']" >';
+                            echo '<span class="camm-handle dashicons dashicons-menu" title="Drag & Drop"></span>';
+                            echo '<label class="camm-switch"><input type="checkbox" name="' . esc_attr( $option_name ) . '[allowed][]" value="' . esc_attr( $subslug ) . '"><span class="camm-slider"></span></label>';
+                            if($is_subdivider) {
+                                echo '<span class="camm-label">Divider</span>';
+                            } else {
+                                echo '<span class="camm-label">' . $sublabel . '</span>';
+                            }
+                            if(!$is_subdivider) {
+                                echo '<input type="text" name="' . esc_attr( $option_name ) . '[renames][' . esc_attr( $subslug ) . ']" value="" placeholder="' . esc_attr__( 'Umbenennen', self::TEXTDOMAIN ) . '">';
+                            }
+                            echo '<button type="button" class="camm-dropdown" title="Mehr" style="margin-left:auto;"></button>';
+                            echo '<input type="hidden" class="camm-order" name="' . esc_attr( $option_name ) . '[suborder][' . esc_attr( $slug ) . '][]" value="' . esc_attr( $subslug ) . '">';
                             echo '</li>';
                         }
                         echo '</ul>';
@@ -241,6 +276,13 @@ class CAMM_Admin_Menu_Manager {
                 ?>
                 </ul>
                 <?php submit_button(); ?>
+            </form>
+            <form method="post" action="">
+                <?php wp_nonce_field('camm_reset_' . $selected_role); ?>
+                <input type="hidden" name="camm_reset" value="1">
+                <button type="submit" class="button button-secondary" onclick="return confirm('<?php echo esc_js(__('Wirklich zurücksetzen? Alle Menü-Einstellungen für diese Rolle gehen verloren.', self::TEXTDOMAIN)); ?>');">
+                    <?php esc_html_e('Zurücksetzen', self::TEXTDOMAIN); ?>
+                </button>
             </form>
         </div>
         <?php

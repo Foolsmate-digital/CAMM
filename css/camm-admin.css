@@ -24,14 +24,17 @@ body.toplevel_page_camm-settings #wpcontent {
     border-radius: 10px;
     margin-bottom: 12px;
     padding: 0 16px;
-    height: 54px;
-    min-height: 54px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.03);
     font-size: 17px;
     position: relative;
+}
+.camm-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 54px;
+    height: 54px;
+    background: transparent;
 }
 .camm-label {
     flex: 1 1 0%;
@@ -43,15 +46,19 @@ body.toplevel_page_camm-settings #wpcontent {
     margin-right: 8px;
     font-weight: 500;
 }
-.camm-handle, .camm-settings, .camm-icon-upload {
+.camm-handle, .camm-settings, .camm-icon-upload, .camm-submenu-toggle, .camm-dropdown {
     flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     font-size: 18px;
     margin: 0 2px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
 }
 .camm-icon {
     width: 20px;
@@ -65,9 +72,7 @@ body.toplevel_page_camm-settings #wpcontent {
     border-radius: 6px;
     background: #f8f9fb;
     font-size: 15px;
-    padding: 4px 10px;
     min-width: 36px;
-    cursor: pointer;
     height: 32px;
     display: flex;
     align-items: center;
@@ -184,26 +189,63 @@ body.toplevel_page_camm-settings #wpcontent {
 }
 
 .camm-submenu-list {
-    margin: 8px 0 8px 36px;
+    margin: 0;
     padding: 0;
     list-style: none;
-    border-left: 2px solid #e3e6ee;
+    border-left: 3px solid #2563eb;
+    background: #f4f7fd;
+    border-radius: 0 0 8px 8px;
 }
 .camm-submenu-item {
-    background: #f8f9fb;
-    border: 1px solid #e3e6ee;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    padding: 6px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 0;
+    padding: 4px 8px 4px 24px;
+    min-height: 40px;
+    height: 40px;
     font-size: 15px;
     display: flex;
     align-items: center;
     gap: 12px;
+    color: #444;
+    transition: background 0.15s, box-shadow 0.15s;
+    border-bottom: 1px solid #f0f4fa;
+}
+.camm-submenu-item:last-child {
+    border-bottom: none;
+}
+.camm-submenu-item:first-child {
+    border-top-left-radius: 6px;
+}
+.camm-submenu-item:last-child {
+    border-bottom-left-radius: 6px;
+}
+.camm-submenu-item:hover {
+    background: #f6faff;
 }
 .camm-submenu-item .camm-label {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 400;
-    max-width: 200px;
+    max-width: 120px;
+}
+.camm-submenu-item input[type="text"] {
+    height: 32px;
+    font-size: 14px;
+    border-radius: 5px;
+    max-width: 120px;
+    padding: 4px 12px;
+}
+.camm-submenu-item .camm-switch {
+    transform: scale(0.85);
+    margin-right: 2px;
+}
+.camm-submenu-item .camm-dropdown {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    font-size: 15px;
+    margin-left: auto;
 }
 .camm-submenu-toggle {
     background: none;
@@ -216,7 +258,34 @@ body.toplevel_page_camm-settings #wpcontent {
     display: flex;
     align-items: center;
     height: 32px;
+    transition: transform 0.2s;
+}
+.camm-submenu-toggle[aria-expanded="true"] .dashicons {
+    transform: rotate(180deg);
+    color: #2563eb;
+}
+.camm-submenu-toggle .dashicons {
+    transition: transform 0.2s;
+}
+.camm-submenu-toggle, .camm-dropdown {
+    margin-left: auto;
+}
+.camm-submenu-toggle[aria-expanded="true"],
+.camm-submenu-toggle[aria-expanded="true"] .dashicons {
+    color: #2563eb !important;
+}
+.camm-submenu-list {
+    box-shadow: none;
+}
+.camm-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 54px;
+    height: 54px;
+    background: transparent;
 }
 .camm-submenu-toggle[aria-expanded="true"] {
-    color: #2563eb;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    border-radius: 6px;
 } 

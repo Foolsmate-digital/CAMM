@@ -1,0 +1,222 @@
+/* Modernes Card-Design für Admin Menü Manager */
+
+body.toplevel_page_camm-settings #wpcontent {
+    background: #f5f6fa;
+}
+
+.wrap {
+    max-width: 800px;
+    margin: 30px auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    padding: 32px 32px 24px 32px;
+}
+
+#camm-menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+#camm-menu-list li {
+    background: #fff;
+    border: 1px solid #e3e6ee;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    padding: 0 16px;
+    height: 54px;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    font-size: 17px;
+    position: relative;
+}
+.camm-label {
+    flex: 1 1 0%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    max-width: 260px;
+    margin-right: 8px;
+    font-weight: 500;
+}
+.camm-handle, .camm-settings, .camm-icon-upload {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+    margin: 0 2px;
+}
+.camm-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    margin-right: 6px;
+}
+.camm-dropdown {
+    margin-left: auto;
+    border: 1px solid #e3e6ee;
+    border-radius: 6px;
+    background: #f8f9fb;
+    font-size: 15px;
+    padding: 4px 10px;
+    min-width: 36px;
+    cursor: pointer;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.camm-dropdown::after {
+    content: '\25BC';
+    font-size: 12px;
+    margin-left: 6px;
+    color: #b0b4c1;
+}
+#camm-menu-list li input[type="text"] {
+    min-width: 120px;
+    border-radius: 6px;
+    border: 1px solid #e3e6ee;
+    padding: 4px 10px;
+    font-size: 15px;
+    background: #f8f9fb;
+}
+#camm-menu-list li .camm-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+}
+#camm-menu-list li .camm-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+#camm-menu-list li .camm-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #e3e6ee;
+    border-radius: 22px;
+    transition: .3s;
+}
+#camm-menu-list li .camm-switch input:checked + .camm-slider {
+    background-color: #2563eb;
+}
+#camm-menu-list li .camm-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: .3s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+#camm-menu-list li .camm-switch input:checked + .camm-slider:before {
+    transform: translateX(18px);
+}
+#camm-menu-list li .camm-divider {
+    color: #b0b4c1;
+    font-style: italic;
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+#camm-menu-list li .camm-order {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .wrap {
+        padding: 10px;
+    }
+    #camm-menu-list li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 10px;
+    }
+}
+
+.camm-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid #e3e6ee;
+    background: transparent;
+}
+.camm-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: #222;
+    letter-spacing: -0.5px;
+}
+.camm-role-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+}
+.camm-role-form label {
+    color: #444;
+    font-weight: 500;
+}
+.camm-role-form select {
+    border-radius: 6px;
+    border: 1px solid #e3e6ee;
+    background: #f8f9fb;
+    font-size: 1rem;
+    padding: 4px 10px;
+    min-width: 120px;
+}
+
+.camm-submenu-list {
+    margin: 8px 0 8px 36px;
+    padding: 0;
+    list-style: none;
+    border-left: 2px solid #e3e6ee;
+}
+.camm-submenu-item {
+    background: #f8f9fb;
+    border: 1px solid #e3e6ee;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    padding: 6px 14px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.camm-submenu-item .camm-label {
+    font-size: 15px;
+    font-weight: 400;
+    max-width: 200px;
+}
+.camm-submenu-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right: 6px;
+    padding: 0 4px;
+    color: #b0b4c1;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    height: 32px;
+}
+.camm-submenu-toggle[aria-expanded="true"] {
+    color: #2563eb;
+} 
